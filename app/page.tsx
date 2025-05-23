@@ -7,7 +7,14 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 
 // --- Three.js Background Component ---
-const HeroBackgroundCanvas = ({ mousePosition }) => {
+interface HeroBackgroundCanvasProps {
+  mousePosition: {
+    x: number;
+    y: number;
+  };
+}
+
+const HeroBackgroundCanvas = ({ mousePosition }: HeroBackgroundCanvasProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -175,7 +182,14 @@ const HeroBackgroundCanvas = ({ mousePosition }) => {
 };
 
 // Add this before the Home component
-const ProjectCard = ({ title, description, tags, language, stars, link }) => {
+const ProjectCard = ({ title, description, tags, language, stars, link }: {
+  title: string;
+  description: string;
+  tags: string[];
+  language: string;
+  stars: number;
+  link: string;
+}) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -234,7 +248,7 @@ export default function Home() {
     restDelta: 0.001
   });
 
-  const handleMouseMove = useCallback((e) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   }, []);
 
@@ -244,16 +258,15 @@ export default function Home() {
   }, [handleMouseMove]);
 
   useEffect(() => {
-    const handleScroll = (e) => {
+    const handleScroll = (e: Event) => {
       e.preventDefault();
-      const targetId = e.currentTarget.getAttribute('href').substring(1);
+      const target = e.currentTarget as HTMLAnchorElement;
+      const href = target.getAttribute('href');
+      if (!href) return;
+      const targetId = href.substring(1);
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-        setIsMenuOpen(false);
+        targetElement.scrollIntoView({ behavior: 'smooth' });
       }
     };
 
