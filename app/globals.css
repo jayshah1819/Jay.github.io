@@ -18,6 +18,7 @@
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
+  cursor: auto !important;
 }
 
 body {
@@ -30,6 +31,12 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  cursor: auto !important;
+}
+
+/* Remove custom cursor and restore system cursor globally */
+html, body {
+  cursor: auto !important;
 }
 
 /* Custom animation for the scroll down lines */
@@ -239,4 +246,4 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-} 
+}

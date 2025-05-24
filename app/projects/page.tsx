@@ -6,10 +6,13 @@ import { Mail, Linkedin, Github, ExternalLink } from 'lucide-react';
 
 export default function Projects() {
   return (
-    <div className="bg-[#1E1E1E] text-white min-h-screen font-sans">
+    <div className="bg-[#1E1E1E] text-white min-h-screen font-sans" style={{ cursor: 'auto' }}>
       <header className="flex justify-between items-center p-6">
-        <div className="text-3xl font-extrabold">
-          <span>Your</span><br /><span>Name.</span>
+        <div className="text-3xl font-extrabold text-base">
+          <div className="font-extrabold text-xs">
+            <span>Graduate Student, University of Dayton</span>
+            <div className="w-6 h-0.5 bg-white mt-2"></div>
+          </div>
         </div>
         <nav className="space-x-6 text-gray-400">
           <Link href="/" className="hover:text-white">Profile</Link>
@@ -18,74 +21,51 @@ export default function Projects() {
           <Link href="/contact" className="hover:text-white">Contact</Link>
         </nav>
         <div>
-          <button className="bg-white w-8 h-8 rounded-full"></button>
+          <a href="https://jJay.github.io" target="_blank" rel="noopener noreferrer">
+            <button className="bg-white w-8 h-8 rounded-full flex items-center justify-center" title="My GitHub Portfolio">
+              <Github size={20} className="text-black" />
+            </button>
+          </a>
         </div>
       </header>
 
       <section className="px-8 py-12">
-        <h1 className="text-3xl font-bold mb-8">Projects.</h1>
-        
+        <h1 className="text-3xl font-bold mb-2">Contributions</h1>
+        <div className="w-6 h-0.5 bg-white mb-8"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Project Item 1 */}
+          {/* Java Pathfinder Contribution */}
           <div className="bg-[#2A2A2A] p-6 rounded-lg hover:transform hover:scale-105 transition-transform duration-300">
-            <h2 className="text-xl font-bold mb-4">Project Name 1</h2>
+            <h2 className="text-xl font-bold mb-1">Java Pathfinder</h2>
+            <div className="text-xs text-gray-400 mb-1">
+              <a href="https://github.com/javapathfinder/jpf-core/pull/529" target="_blank" rel="noopener noreferrer" className="underline hover:text-pink-300">Open Source</a>
+            </div>
+            <div className="text-xs text-gray-400 mb-2">2025</div>
             <p className="text-gray-400 mb-4">
-              Brief description of the project and its key features. Highlight the technologies used and your role in the project.
+              Enhanced regex pattern matching and implemented BDD testing in the JPCORE module.
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">React</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">Node.js</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">MongoDB</span>
-            </div>
-            <div className="flex space-x-4">
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <ExternalLink size={20} />
-              </a>
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <Github size={20} />
-              </a>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Java</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Regex</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">BDD</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Testing</span>
             </div>
           </div>
 
-          {/* Project Item 2 */}
+          {/* Jenkins Tekton Client Plugin Contribution */}
           <div className="bg-[#2A2A2A] p-6 rounded-lg hover:transform hover:scale-105 transition-transform duration-300">
-            <h2 className="text-xl font-bold mb-4">Project Name 2</h2>
+            <h2 className="text-xl font-bold mb-1">Jenkins Tekton Client Plugin</h2>
+            <div className="text-xs text-gray-400 mb-1">
+              <a href="https://github.com/jenkinsci/tekton-client-plugin/pull/385" target="_blank" rel="noopener noreferrer" className="underline hover:text-pink-300">Open Source</a>
+            </div>
+            <div className="text-xs text-gray-400 mb-2">2025</div>
             <p className="text-gray-400 mb-4">
-              Brief description of the project and its key features. Highlight the technologies used and your role in the project.
+              Refactored code for better modularity and added comprehensive unit tests for cross-platform support.
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">Python</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">TensorFlow</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">OpenCV</span>
-            </div>
-            <div className="flex space-x-4">
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <ExternalLink size={20} />
-              </a>
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <Github size={20} />
-              </a>
-            </div>
-          </div>
-
-          {/* Project Item 3 */}
-          <div className="bg-[#2A2A2A] p-6 rounded-lg hover:transform hover:scale-105 transition-transform duration-300">
-            <h2 className="text-xl font-bold mb-4">Project Name 3</h2>
-            <p className="text-gray-400 mb-4">
-              Brief description of the project and its key features. Highlight the technologies used and your role in the project.
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">Java</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">Spring Boot</span>
-              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-sm">PostgreSQL</span>
-            </div>
-            <div className="flex space-x-4">
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <ExternalLink size={20} />
-              </a>
-              <a href="#" className="text-pink-300 hover:text-pink-400 transition-colors duration-300">
-                <Github size={20} />
-              </a>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Java</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Jenkins</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">Testing</span>
+              <span className="px-3 py-1 bg-[#3A3A3A] rounded-full text-xs">DevOps</span>
             </div>
           </div>
         </div>
@@ -106,4 +86,4 @@ export default function Projects() {
       </div>
     </div>
   );
-} 
+}

@@ -3,8 +3,10 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Mail, Linkedin, Github, ExternalLink, Menu, X, Code } from 'lucide-react';
 import * as THREE from 'three';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import { Flipper, Flipped } from 'react-flip-toolkit';
+import ContactSection from './components/ContactSection';
+import Intro from './components/Intro';
 
 // --- Three.js Background Component ---
 interface HeroBackgroundCanvasProps {
@@ -190,54 +192,49 @@ const ProjectCard = ({ title, description, tags, language, stars, link }: {
   stars: number;
   link: string;
 }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-
   return (
-    <Flipped flipId={title}>
-      <div 
-        className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700 cursor-pointer"
-        onClick={() => setIsFlipped(!isFlipped)}
-      >
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Code size={24} className="text-green-400" />
-            <h4 className="text-xl font-bold text-white">{title}</h4>
+    <div className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700 bg-black">
+      <div className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Code size={24} className="text-gray-400" />
+          <h4 className="text-xl font-bold text-white">{title}</h4>
+        </div>
+        <p className="text-gray-400 text-sm mb-4">
+          {description}
+        </p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tags.map((tag, index) => (
+            <span key={index} className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-400">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center justify-between text-sm text-gray-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <Code size={16} /> {language}
+            </span>
+            <span className="flex items-center gap-1">
+              <Github size={16} /> {stars}
+            </span>
           </div>
-          <p className="text-gray-400 text-sm mb-4">
-            {description}
-          </p>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag, index) => (
-              <span key={index} className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">
-                {tag}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center justify-between text-sm text-gray-400">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <Code size={16} /> {language}
-              </span>
-              <span className="flex items-center gap-1">
-                <Github size={16} /> {stars}
-              </span>
-            </div>
-            <a 
-              href={link} 
-              className="text-green-400 hover:text-green-300 transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              View Project <ExternalLink size={16} />
-            </a>
-          </div>
+          <a 
+            href={link} 
+            className="text-gray-400 hover:text-white transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Project <ExternalLink size={16} />
+          </a>
         </div>
       </div>
-    </Flipped>
+    </div>
   );
 };
 
 // --- Main App Component ---
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sectionsRef = useRef([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -247,6 +244,11 @@ export default function Home() {
     damping: 30,
     restDelta: 0.001
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 2000); // 2 seconds intro
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -318,501 +320,444 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen text-white font-sans antialiased overflow-x-hidden relative bg-[#181a1b]">
-      {/* Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-blue-500 origin-left z-50"
-        style={{ scaleX }}
-      />
-
-      {/* Left Navigation Bar */}
-      <motion.div 
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.4, duration: 0.8 }}
-        className="fixed left-0 top-0 h-full w-16 bg-[#181a1b] border-r border-gray-800 hidden md:block z-50"
-      >
-        <div className="h-full flex flex-col items-center justify-center space-y-4">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.6 }}
-            className={`rotate-90 text-xs text-white mb-4 opacity-50 hover:opacity-100 transition-opacity duration-300`}
-          >
-            SCROLL DOWN
-          </motion.div>
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.8 + i * 0.1 }}
-              className="w-6 h-0.5 bg-white opacity-50 hover:opacity-100 transition-opacity duration-300"
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Right Navigation Bar */}
-      <motion.div 
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.4, duration: 0.8 }}
-        className="fixed right-0 top-0 h-full w-16 bg-[#181a1b] border-l border-gray-800 hidden md:block z-50"
-      >
-        <div className="h-full flex flex-col items-center justify-center space-y-4">
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.8 }}
-            className="w-6 h-0.5 bg-white opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+    <main className="min-h-screen text-white font-sans antialiased overflow-x-hidden relative bg-black">
+      <AnimatePresence>
+        {showIntro && <Intro />}
+      </AnimatePresence>
+      
+      {!showIntro && (
+        <>
+          {/* Progress Bar */}
+          <motion.div
+            className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-blue-500 origin-left z-50"
+            style={{ scaleX }}
           />
-          {['Git', 'In', 'Mail'].map((link, i) => (
-            <motion.div
-              key={link}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 2 + i * 0.1 }}
-              className="rotate-90 group"
-            >
-              <a 
-                href={link === 'Git' ? 'https://github.com/jayshah1819' : 
-                      link === 'In' ? 'https://linkedin.com/in/jayshah018' : 
-                      'mailto:jayshah.jk.jk18@gmail.com'} 
-                className="hover:text-white transition-all duration-300 text-lg hover:scale-110 inline-block"
-              >
-                {link}
-              </a>
-            </motion.div>
-          ))}
+
+          {/* Left Navigation Bar */}
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 2.3 }}
-            className="w-6 h-0.5 bg-white opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-          />
-        </div>
-      </motion.div>
-
-      {/* Main Content - Add padding for the side bars */}
-      <div className="md:ml-16 md:mr-16">
-        {/* Header */}
-        <header className="py-6 px-6 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50 bg-[#181a1b]">
-          <div className="text-3xl font-extrabold">
-            <span>Jay</span><br /><span>Shah</span>
-          </div>
-          <nav className="hidden md:block space-x-6 text-gray-400">
-            <ul className="flex space-x-6 text-lg font-medium">
-              <li>
-                <a href="#hero" className="relative px-4 py-2 text-white">
-                  <span className="relative z-10">Profile</span>
-                  <span className="absolute inset-0 bg-white opacity-10 rounded-lg"></span>
-                </a>
-              </li>
-              <li>
-                <a href="#experience" className="relative px-4 py-2 hover:text-white transition-colors duration-300">
-                  <span className="relative z-10">Experience</span>
-                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg transition-opacity duration-300"></span>
-                </a>
-              </li>
-              <li>
-                <a href="#projects" className="relative px-4 py-2 hover:text-white transition-colors duration-300">
-                  <span className="relative z-10">Projects</span>
-                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg transition-opacity duration-300"></span>
-                </a>
-              </li>
-              <li>
-                <a href="#contributions" className="relative px-4 py-2 hover:text-white transition-colors duration-300">
-                  <span className="relative z-10">Contributions</span>
-                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg transition-opacity duration-300"></span>
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="relative px-4 py-2 hover:text-white transition-colors duration-300">
-                  <span className="relative z-10">Contact</span>
-                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg transition-opacity duration-300"></span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <div className="flex items-center space-x-4">
-            <button className="w-8 h-8 rounded-full bg-white"></button>
-            <button
-              className="md:hidden text-white focus:outline-none"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle navigation menu"
-            >
-              {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
-            </button>
-          </div>
-        </header>
-
-        {/* Mobile Menu */}
-        <div className={`fixed inset-0 bg-black bg-opacity-95 z-40 flex flex-col items-center justify-center transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden`}>
-          <button
-            className="absolute top-6 right-6 focus:outline-none text-white"
-            onClick={() => setIsMenuOpen(false)}
-            aria-label="Close navigation menu"
+            transition={{ delay: 1.4, duration: 0.8 }}
+            className="fixed left-0 top-0 h-full w-16 bg-black border-r border-gray-800 hidden md:block z-50"
           >
-            <X size={36} />
-          </button>
-          <ul className="flex flex-col space-y-8 text-3xl font-bold text-center">
-            <li><a href="#hero" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Profile</a></li>
-            <li><a href="#experience" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Experience</a></li>
-            <li><a href="#projects" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Projects</a></li>
-            <li><a href="#contact" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
-          </ul>
-        </div>
-
-        {/* Hero Section */}
-        <section id="hero" className="relative h-screen flex items-center px-10 overflow-hidden bg-[#181a1b] snap-start">
-          <HeroBackgroundCanvas mousePosition={mousePos} />
-
-          <div className="relative z-10 flex flex-col lg:flex-row items-start justify-end w-full max-w-7xl mx-auto">
-            <div className="flex flex-col items-start text-left lg:w-1/2 space-y-6 lg:ml-auto lg:max-w-xl">
-              <motion.h1 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
+            <div className="h-full flex flex-col items-center justify-center space-y-4 relative">
+              {/* Long vertical line effect */}
+              <div className="absolute left-1/2 top-0 h-full w-0.5 bg-gradient-to-b from-gray-400/70 to-gray-700/0 z-0" style={{transform: 'translateX(-50%)'}} />
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ 
-                  duration: 0.8,
-                  ease: [0.6, -0.05, 0.01, 0.99]
+                  delay: 1.6,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
                 }}
-                className="text-3xl font-bold text-gradient"
+                className="rotate-90 text-xs text-gray-400 mb-4 opacity-50 hover:opacity-100 transition-opacity duration-300 z-10 bg-black px-2 py-1 rounded shadow"
               >
-                <motion.span
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                  className="block text-2xl font-bold"
+                SCROLL DOWN
+              </motion.div>
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ 
+                    delay: 1.8 + i * 0.2,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15
+                  }}
+                  whileHover={{ 
+                    scale: 1.2,
+                    x: -10,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="w-6 h-0.5 bg-gray-400 opacity-50 hover:opacity-100 transition-opacity duration-300 z-10"
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right Navigation Bar */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.4, duration: 0.8 }}
+            className="fixed right-0 top-0 h-full w-16 bg-black border-l border-gray-800 hidden md:block z-50"
+          >
+            <div className="h-full flex flex-col items-center justify-center space-y-4">
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.8 }}
+                className="w-6 h-0.5 bg-gray-400 opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+              />
+              {[
+                { icon: <Github size={24} />, link: 'https://github.com/jayshah1819' },
+                { icon: <Linkedin size={24} />, link: 'https://linkedin.com/in/jayshah018' },
+                { icon: <Mail size={24} />, link: 'mailto:jayshah.jk.jk18@gmail.com' }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ 
+                    delay: 2 + i * 0.2,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15
+                  }}
+                  whileHover={{ 
+                    scale: 1.2,
+                    x: 10,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors duration-300"
                 >
-                  Hello,
-                </motion.span>
-                <motion.span
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                  className="block mt-2 text-3xl font-bold"
-                >
-                  My name is Jay Shah
-                </motion.span>
-              </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0, x: -50 }}
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    {item.icon}
+                  </a>
+                </motion.div>
+              ))}
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ 
-                  delay: 0.6,
-                  duration: 0.8,
-                  ease: "easeOut"
+                  delay: 2.6,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
                 }}
+                className="w-6 h-0.5 bg-gray-400 opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
+          </motion.div>
+
+          {/* Main Content - Add padding for the side bars */}
+          <div className="md:ml-16 md:mr-16 flex justify-center">
+            <div className="w-full max-w-5xl">
+              {/* Header */}
+              <motion.header 
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 15, mass: 1 }}
+                className="py-6 px-6 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50 bg-black border-b border-gray-800"
               >
-                I'm a graduate student from UD.
-              </motion.p>
+                <motion.div 
+                  initial={{ x: -40, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 120, damping: 12 }}
+                  whileHover={{ scale: 1.08, color: '#38bdf8' }}
+                  className="flex flex-row items-center gap-3 text-3xl font-extrabold text-white text-left cursor-pointer select-none tracking-widest uppercase"
+                >
+                  <span>JAY</span>
+                  <span>SHAH</span>
+                </motion.div>
+
+                {/* ...existing right-side nav/menu code... */}
+              </motion.header>
+
+              {/* Mobile Menu */}
               <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ x: '100%', opacity: 0 }}
+                animate={{ 
+                  x: isMenuOpen ? 0 : '100%',
+                  opacity: isMenuOpen ? 1 : 0
+                }}
                 transition={{ 
-                  delay: 0.8,
-                  duration: 0.8,
-                  ease: "easeOut"
+                  type: 'spring',
+                  stiffness: 100,
+                  damping: 15,
+                  mass: 1
                 }}
-                className="space-y-4 max-w-md"
+                className="fixed inset-0 bg-black bg-opacity-95 z-40 flex flex-col items-center justify-center md:hidden"
               >
-                <p>
-                  My areas of interest include problem-solving, cloud infrastructure, machine learning, and IoT.
-                </p>
-                <p>
-                  With a detail oriented-focus, I enjoy creating simple but effective solutions to improve application performance, ease of maintenance, and user experience.
-                </p>
-              </motion.div>
-              <motion.a 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ 
-                  delay: 1,
-                  duration: 0.5
-                }}
-                href="/resume.pdf" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg font-medium tracking-wide hover:shadow-lg transition-all duration-300"
-              >
-                Get My Resume
-              </motion.a>
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              animate={{ 
-                opacity: 1, 
-                scale: [1, 1.1, 1.1, 1, 1],
-                rotate: [0, 0, 5, 5, 0],
-                borderRadius: ["8px", "8px", "50%", "50%", "8px"],
-              }}
-              transition={{ 
-                duration: 3,
-                ease: "easeInOut",
-                times: [0, 0.2, 0.5, 0.8, 1],
-                repeat: Infinity,
-                repeatDelay: 1
-              }}
-              whileHover={{ 
-                scale: 1.05,
-                rotate: 2,
-                transition: { duration: 0.2 }
-              }}
-              className="relative lg:w-1/3 mt-10 lg:mt-0 flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg blur-xl opacity-20"></div>
-                <motion.img
-                  src="/profile.png"
-                  alt="Jay Shah"
-                  width={300}
-                  height={300}
-                  className="rounded-lg shadow-2xl relative z-10 object-cover"
-                  style={{
-                    width: 300,
-                    height: 300,
-                  }}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Experience Section */}
-        <section id="experience" className="relative min-h-screen flex flex-col justify-center items-center p-8 bg-[#181a1b] snap-start">
-          <div className="max-w-7xl mx-auto w-full">
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-white mb-10"
-            >
-              EXPERIENCE
-            </motion.h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* ThrivePix Experience */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                whileHover={{ scale: 1.02 }}
-                className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700 p-6 bg-[#181a1b]"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <Code size={24} className="text-green-400" />
-                  <h4 className={`text-xl text-white`}>ThrivePix LLC (Remote)</h4>
-                </div>
-                <p className={`text-xl text-gray-400 mb-4`}>Software Engineer – Backend (Java) | June 2021 - July 2023</p>
-                <div className={`text-gray-400 space-y-3 text-sm`}>
-                  <p>Designed and built backend microservices using Java and Spring Boot; optimised data access with Hibernate, improving system performance by 25%.</p>
-                  <p>Led CI/CD improvements via Jenkins and GitHub Actions; reduced deployment time by 30%.</p>
-                  <p>Developed and executed over 150+ unit/integration tests using JUnit, Mockito, and Postman for REST APIs.</p>
-                  <p>Collaborated cross-functionally with Product, QA, and DevOps in an Agile/Scrum environment.</p>
-                  <p>Oversaw technology management for backend services, ensuring system uptime and deployment efficiency.</p>
-                </div>
+                <motion.button
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="absolute top-6 right-6 focus:outline-none text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                  aria-label="Close navigation menu"
+                >
+                  <X size={36} />
+                </motion.button>
+                <motion.ul 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex flex-col space-y-8 text-3xl font-bold text-center"
+                >
+                  <motion.li
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <a href="#hero" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Profile</a>
+                  </motion.li>
+                  <motion.li
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <a href="#experience" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Experience</a>
+                  </motion.li>
+                  <motion.li
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <a href="#projects" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Projects</a>
+                  </motion.li>
+                  <motion.li
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <a href="#contact" className="text-white hover:text-gray-400 transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>Contact</a>
+                  </motion.li>
+                </motion.ul>
               </motion.div>
 
-              {/* University Experience */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                whileHover={{ scale: 1.02 }}
-                className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700 p-6 bg-[#181a1b]"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <Code size={24} className="text-green-400" />
-                  <h4 className={`text-xl text-white`}>Student Manager, Roesch Library</h4>
-                </div>
-                <p className={`text-xl text-gray-400 mb-4`}>University of Dayton | April 2024 - Current</p>
-                <div className={`text-gray-400 space-y-3 text-sm`}>
-                  <p>Provided technical and printer support to 200+ students and faculty across 68 departments.</p>
-                  <p>Assisted with system troubleshooting, debugging, and user experience enhancement across platforms.</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Open Source Contributions */}
-        <section id="contributions" className="relative min-h-screen flex flex-col justify-center items-center p-8 bg-[#181a1b] snap-start">
-          <div className="max-w-7xl mx-auto w-full">
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-white mb-10"
-            >
-              CONTRIBUTIONS
-            </motion.h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Java Pathfinder */}
-              <div className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Code size={24} className="text-green-400" />
-                    <h4 className={`text-xl text-white`}>JAVA PATHFINDER</h4>
-                  </div>
-                  <p className={`text-gray-400 text-sm mb-4`}>
-                    Enhanced regex pattern matching and implemented BDD testing in the JPCORE module.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Java</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Regex</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">BDD</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Testing</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Code size={16} /> Java
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Github size={16} /> 5
-                      </span>
+              {/* Hero Section */}
+              <section id="hero" className="relative min-h-[60vh] flex flex-col justify-center px-6 py-16 bg-black border-b border-gray-800">
+                <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                  <div className="flex-1 max-w-lg md:mr-8 lg:mr-16 xl:mr-24 order-2 md:order-1">
+                    <div className="bg-transparent border-none p-0 shadow-none">
+                      <h2 className="text-2xl font-semibold text-left mb-4 text-gray-100">Graduate Student, University of Dayton</h2>
+                      <p className="text-gray-300 text-left text-xs md:text-sm leading-relaxed mb-0">
+                        I am passionate about solving complex problems at the intersection of software engineering, cloud infrastructure, and machine learning.<br/><br/>
+                        I thrive on building scalable, high-performance systems and transforming ideas into robust, user-centric solutions.<br/><br/>
+                        My experience spans backend development, DevOps, and IoT, with a focus on clean, maintainable code and seamless user experiences.
+                      </p>
                     </div>
-                    <a href="#" className="text-green-400 hover:text-green-300 transition-colors">
-                      View Contribution <ExternalLink size={16} />
-                    </a>
+                  </div>
+                  <div className="flex justify-center md:justify-end items-center mt-8 md:mt-0 order-1 md:order-2">
+                    <img 
+                      src="/profile.png" 
+                      alt="Jay Shah profile photo" 
+                      className="w-56 h-56 md:w-72 md:h-72 rounded-lg object-cover border-4 border-gray-700 shadow-2xl grayscale hover:grayscale-0 hover:scale-105 transition-all duration-300 bg-gray-900" 
+                    />
                   </div>
                 </div>
-              </div>
+              </section>
 
-              {/* Jenkins Tekton */}
-              <div className="group relative border border-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-700">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Code size={24} className="text-green-400" />
-                    <h4 className={`text-xl text-white`}>JENKINS TEKTON CLIENT PLUGIN</h4>
-                  </div>
-                  <p className={`text-gray-400 text-sm mb-4`}>
-                    Refactored code for better modularity and added comprehensive unit tests for cross-platform support.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Java</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Jenkins</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">Testing</span>
-                    <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">DevOps</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Code size={16} /> Java
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Github size={16} /> 3
-                      </span>
+              {/* Experience Section */}
+              <section id="experience" className="py-16 border-b border-gray-800">
+                <h2 className="text-2xl font-bold mb-8 text-left">Experience</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Experience Item 1 */}
+                  <div className="flex flex-col h-full border-l-4 border-white pl-6 bg-black rounded-lg shadow-sm">
+                    <div className="mb-2">
+                      <h3 className="text-xl font-semibold text-left">Software Engineer – Backend (Java)</h3>
+                      <a href="#" className="text-gray-400 hover:underline text-left block">ThrivePix LLC</a>
+                      <div className="text-gray-400 text-sm mt-1">June 2021 - July 2023 · Remote</div>
                     </div>
-                    <a href="#" className="text-green-400 hover:text-green-300 transition-colors">
-                      View Contribution <ExternalLink size={16} />
-                    </a>
+                    <div className="text-gray-300 text-left mt-2 flex-1 space-y-2">
+                      <div>Designed and built backend microservices using Java and Spring Boot; optimised data access with Hibernate, improving system performance by 25%.</div>
+                      <div>Led CI/CD improvements via Jenkins and GitHub Actions; reduced deployment time by 30%.</div>
+                      <div>Developed and executed over 150+ unit/integration tests using JUnit, Mockito, and Postman for REST APIs.</div>
+                      <div>Collaborated cross-functionally with Product, QA, and DevOps in an Agile/Scrum environment.</div>
+                      <div>Oversaw technology management for backend services, ensuring system uptime and deployment efficiency.</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Java</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Spring Boot</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Jenkins</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">GitHub Actions</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Hibernate</span>
+                    </div>
+                  </div>
+                  {/* Experience Item 2 */}
+                  <div className="flex flex-col h-full border-l-4 border-white pl-6 bg-black rounded-lg shadow-sm">
+                    <div className="mb-2">
+                      <h3 className="text-xl font-semibold text-left">Student Manager</h3>
+                      <a href="#" className="text-gray-400 hover:underline text-left block">Roesch Library, University of Dayton</a>
+                      <div className="text-gray-400 text-sm mt-1">April 2024 - Current</div>
+                    </div>
+                    <div className="text-gray-300 text-left mt-2 flex-1 space-y-2">
+                      <div>Provided technical and printer support to 200+ students and faculty across 68 departments.</div>
+                      <div>Assisted with system troubleshooting, debugging, and user experience enhancement across platforms.</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Technical Support</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Management</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </section>
+
+              {/* Contributions Section */}
+              <section id="contributions" className="py-16 border-b border-gray-800">
+                <h2 className="text-2xl font-bold mb-8 text-left">Contributions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Contribution Item 1 */}
+                  <div className="border border-gray-800 rounded-lg p-6 bg-black flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold text-left mb-1">Java Pathfinder</h3>
+                      <a href="#" className="text-gray-400 hover:underline text-left block mb-2">Open Source</a>
+                      <div className="text-gray-400 text-sm mb-2">2023</div>
+                      <div className="text-gray-300 text-left mb-2">Enhanced regex pattern matching and implemented BDD testing in the JPCORE module.</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Java</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Regex</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">BDD</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Testing</span>
+                    </div>
+                  </div>
+                  {/* Contribution Item 2 */}
+                  <div className="border border-gray-800 rounded-lg p-6 bg-black flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold text-left mb-1">Jenkins Tekton Client Plugin</h3>
+                      <a href="#" className="text-gray-400 hover:underline text-left block mb-2">Open Source</a>
+                      <div className="text-gray-400 text-sm mb-2">2023</div>
+                      <div className="text-gray-300 text-left mb-2">Refactored code for better modularity and added comprehensive unit tests for cross-platform support.</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Java</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Jenkins</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">Testing</span>
+                      <span className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">DevOps</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Projects Section */}
+              <section id="projects" className="py-16 border-b border-gray-800">
+                <h2 className="text-2xl font-bold mb-8 text-left">Projects</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Project Items */}
+                  {projects.map((project, index) => (
+                    <div key={index} className="border border-gray-800 rounded-lg p-6 bg-black flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold text-left mb-1">{project.title}</h3>
+                        <a href={project.link} className="text-gray-400 hover:underline text-left block mb-2">Personal Project</a>
+                        <div className="text-gray-400 text-sm mb-2">2023</div>
+                        <div className="text-gray-300 text-left mb-2">{project.description}</div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {project.tags.map((tag, i) => (
+                          <span key={i} className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Contact Section */}
+              <section id="contact" className="py-16">
+                <h2 className="text-2xl font-bold mb-8 text-left">Contact</h2>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 bg-black border border-gray-800 rounded-lg p-8 shadow-lg">
+                  <div className="flex flex-col gap-2 text-left">
+                    <div className="flex items-center gap-3">
+                      <Mail className="text-blue-400" size={20} />
+                      <a href="mailto:jayshah.jk.jk18@gmail.com" className="text-blue-400 hover:underline font-medium">jayshah.jk.jk18@gmail.com</a>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Linkedin className="text-blue-400" size={20} />
+                      <a href="https://linkedin.com/in/jayshah018" className="text-blue-400 hover:underline font-medium" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Github className="text-blue-400" size={20} />
+                      <a href="https://github.com/jayshah1819" className="text-blue-400 hover:underline font-medium" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 text-left md:text-right">
+                    <div className="text-gray-300 font-semibold text-lg">Edison, NJ</div>
+                    <div className="text-gray-400 text-base">(937)-414-7823</div>
+                  </div>
+                </div>
+              </section>
+
+              <footer className="text-center text-gray-400 text-sm mt-20 mb-10">
+                Handcrafted by Jay Shah © 2024.
+              </footer>
             </div>
           </div>
-        </section>
 
-        {/* Projects Section */}
-        <section id="projects" className="relative min-h-screen flex flex-col justify-center items-center p-8 bg-[#181a1b] snap-start">
-          <div className="max-w-7xl mx-auto w-full">
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-white mb-10"
-            >
-              PROJECTS
-            </motion.h3>
-            <Flipper flipKey={projects.map(p => p.title).join('')}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {projects.map((project, index) => (
-                  <ProjectCard key={index} {...project} />
-                ))}
-              </div>
-            </Flipper>
-          </div>
-        </section>
+          {/* Add smooth scroll behavior to the entire page */}
+          <style jsx global>{`
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap');
+            .font-handwriting {
+              font-family: 'Pacifico', cursive;
+              letter-spacing: 0.01em;
+            }
 
-        {/* Contact Section */}
-        <section id="contact" className="relative min-h-screen flex flex-col justify-center items-center p-8 bg-[#181a1b] snap-start">
-          <div className="max-w-7xl mx-auto w-full">
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              CONTACT!
-            </motion.h3>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <p>
-                Feel free to reach out if you want to build something together, have a question, or just want to connect.
-              </p>
-              <div className="space-y-4">
-                <p>
-                  Edison, NJ
-                </p>
-                <p>
-                  (937)-414-7823
-                </p>
-                <a 
-                  href="mailto:jayshah.jk.jk18@gmail.com" 
-                  className="text-white text-xl hover:text-gray-300 transition-colors duration-300 inline-block"
-                >
-                  jayshah.jk.jk18@gmail.com
-                </a>
-              </div>
-              <div className="flex justify-center space-x-8 pt-4">
-                <a 
-                  href="https://linkedin.com/in/jayshah018" 
-                  className="text-white hover:text-gray-300 transition-colors duration-300 text-lg"
-                >
-                  LinkedIn
-                </a>
-                <a 
-                  href="https://github.com/jayshah1819" 
-                  className="text-white hover:text-gray-300 transition-colors duration-300 text-lg"
-                >
-                  GitHub
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+            html {
+              scroll-behavior: smooth;
+              scroll-snap-type: y mandatory;
+              font-family: 'Inter', sans-serif;
+            }
 
-        <footer className="text-center text-gray-400 text-sm mt-20 mb-10">
-          Handcrafted by Jay Shah © 2024.
-        </footer>
-      </div>
+            body {
+              margin: 0;
+              padding: 0;
+              background-color: #000;
+              color: #fff;
+              font-size: 16px;
+              line-height: 1.6;
+            }
 
-      {/* Add smooth scroll behavior to the entire page */}
-      <style jsx global>{`
-        html {
-          scroll-behavior: smooth;
-          scroll-snap-type: y mandatory;
-        }
-        section {
-          scroll-snap-align: start;
-        }
-      `}</style>
-    </div>
+            h1, h2 {
+              font-weight: 700;
+              margin-bottom: 0.5rem;
+            }
+
+            .subtitle {
+              font-weight: 400;
+              color: #aaa;
+              font-size: 1.2rem;
+            }
+
+            .section-title {
+              font-size: 0.9rem;
+              color: #aaa;
+              text-transform: uppercase;
+              margin-top: 2rem;
+              margin-bottom: 1rem;
+            }
+
+            .experience {
+              display: flex;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 2rem;
+              border-top: 1px solid #222;
+              padding-top: 2rem;
+            }
+
+            .experience-entry {
+              max-width: 48%;
+            }
+
+            ul {
+              padding-left: 1rem;
+            }
+
+            ul li {
+              margin-bottom: 0.5rem;
+            }
+
+            .contact {
+              color: #ccc;
+              text-decoration: none;
+              display: block;
+              margin-top: 1rem;
+            }
+
+            .contact:hover {
+              color: #fff;
+            }
+
+            section {
+              scroll-snap-align: start;
+            }
+          `}</style>
+        </>
+      )}
+    </main>
   );
-} 
+}
